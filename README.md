@@ -2,6 +2,6 @@
 weather lady practical project
 
 
-Using OkHTTP /n
+Using OkHTTP
 Using Gson
 Using Guice
