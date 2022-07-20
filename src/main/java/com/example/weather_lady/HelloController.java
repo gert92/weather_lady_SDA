@@ -1,16 +1,17 @@
 package com.example.weather_lady;
 
-import com.google.gson.Gson;
+import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,12 +43,15 @@ public class HelloController {
 
             StringBuilder locationUrlBuilder = new StringBuilder("http://dataservice.accuweather.com/locations/v1/search?apikey=mr3s3PvmHnJIsIWrP9VADG9GBwCQt55q&q=");
 
-           List results = gson.fromJson(run(locationUrlBuilder.append(search.getText()).toString()), List.class);
-           Map coords = (Map) results.get(0);
-           Map country = (Map) coords.get("Country");
-           Map region = (Map) coords.get("Region");
-           Map<String, Double> longlat = (Map) coords.get("GeoPosition");
-            Location location = new Location(1, List.of(longlat.get("Latitude"), longlat.get("Longitude")), (String) region.get("LocalizedName"), (String) coords.get("LocalizedName"), (String) country.get("LocalizedName"));
+           JsonObject result = gson.fromJson(run(locationUrlBuilder.append(search.getText()).toString()), JsonArray.class).get(0).getAsJsonObject();
+
+            String country = result.get("Country").getAsJsonObject().get("LocalizedName").toString();
+            String city = result.get("LocalizedName").getAsString();
+            String region = result.get("Region").getAsJsonObject().get("LocalizedName").toString();
+            JsonObject geoPos = result.get("GeoPosition").getAsJsonObject();
+            List<Double> longLat = List.of(geoPos.get("Longitude").getAsDouble(), geoPos.get("Latitude").getAsDouble());
+
+            Location location = new Location(1, longLat,region, city, country);
 
             //---------GET WEATHER------------------//
 
@@ -59,9 +63,9 @@ public class HelloController {
             weatherUrlBuilder.append("lat=").append(lat).append("&lon=").append(lon).append("&appid=").append(appid);
 
 
-            Map weather = gson.fromJson(run(weatherUrlBuilder.toString()), Map.class);
-            Map main = (Map) weather.get("main");
-            Map wind = (Map) weather.get("wind");
+            JsonObject weather = gson.fromJson(run(weatherUrlBuilder.toString()), JsonObject.class).getAsJsonObject();
+            JsonObject main = weather.get("main").getAsJsonObject();
+            JsonObject wind = weather.get("wind").getAsJsonObject();
 
             weLocation.setText("Location: " + location.getCity());
             temperature.setText("Temperature: " + main.get("temp").toString());
