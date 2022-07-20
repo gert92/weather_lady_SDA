@@ -18,7 +18,7 @@
     <Label fx:id="pressure"/>
     <Label fx:id="humidity"/>
     <Label fx:id="weWind"/>
-    <Label fx:id="searchText" text="Search for a location"/>
+    <Label text="Search for a location"/>
     <TextField fx:id="search"/>
     <Button text="Search" onAction="#onSearchButtonClick"/>
 </VBox>

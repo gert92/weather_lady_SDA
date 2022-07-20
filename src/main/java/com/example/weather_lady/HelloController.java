@@ -1,19 +1,15 @@
 package com.example.weather_lady;
 
 import com.google.gson.*;
-import com.google.gson.stream.JsonReader;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.ResponseBody;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class HelloController {
     OkHttpClient httpClient = new OkHttpClient();
@@ -33,9 +29,7 @@ public class HelloController {
     private TextField search;
 
     @FXML
-//    protected void onHelloButtonClick() {
-//        welcomeText.setText("Welcome to JavaFX Application!");
-//    }
+
     protected <T,V> void onSearchButtonClick() {
         try{
             Gson gson = new Gson();
@@ -43,8 +37,10 @@ public class HelloController {
 
             StringBuilder locationUrlBuilder = new StringBuilder("http://dataservice.accuweather.com/locations/v1/search?apikey=mr3s3PvmHnJIsIWrP9VADG9GBwCQt55q&q=");
 
-           JsonObject result = gson.fromJson(run(locationUrlBuilder.append(search.getText()).toString()), JsonArray.class).get(0).getAsJsonObject();
+            JsonObject result = gson.fromJson(run(locationUrlBuilder.append(search.getText()).toString()), JsonArray.class).get(0).getAsJsonObject();
+//            JsonObject result = gson.fromJson(run(locationUrlBuilder.append(search.getText()).toString()), JsonObject.class);
 
+            System.out.println(result);
             String country = result.get("Country").getAsJsonObject().get("LocalizedName").toString();
             String city = result.get("LocalizedName").getAsString();
             String region = result.get("Region").getAsJsonObject().get("LocalizedName").toString();
@@ -52,6 +48,7 @@ public class HelloController {
             List<Double> longLat = List.of(geoPos.get("Longitude").getAsDouble(), geoPos.get("Latitude").getAsDouble());
 
             Location location = new Location(1, longLat,region, city, country);
+
 
             //---------GET WEATHER------------------//
 
